@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model News {
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(100)
+  description String @db.VarChar(255)
+  banner String @db.VarChar(255)
+  published Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Divisions {
+  id Int @id @default(autoincrement())
+  title String
+  managements Managements[]
+  subDivisions SubDivisions[]
+}
+
+model SubDivisions {
+  id Int @id @default(autoincrement())
+  title String
+  divisiId Int?
+  divisions Divisions? @relation(fields: [divisiId], references: [id])
+}
+
+model Products {
+  id Int @id @default(autoincrement())
+  name String
+  description String?
+  composition String?
+  indications String?
+  image String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model PicBranches {
+  id Int @id @default(autoincrement())
+  name String
+  phone String?
+  branch Branches? @relation(fields: [branchId], references: [id])
+  branchId Int
+}
+
+model Branches {
+  id Int @id @default(autoincrement())
+  name String
+  address String @db.VarChar(255)
+  email String?
+  fax String?
+  picBranches PicBranches[]
+  careers Career[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model CareerLevel {
+  id Int @id @default(autoincrement())
+  name String
+  careers Career[]
+}
+
+model Managements {
+  id Int @id @default(autoincrement())
+  first_name String
+  last_name String
+  email String @unique
+  division_id Int
+  division Divisions @relation(fields: [division_id], references: [id])
+  image String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Career {
+  id Int @id @default(autoincrement())
+  title String
+  description String @db.VarChar(255)
+  careerLevelId Int
+  level CareerLevel @relation(fields: [careerLevelId], references: [id])
+  careerPlacementId Int 
+  placement Branches @relation(fields: [careerPlacementId], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Info {
+  id Int @id @default(autoincrement())
+  name String
+  image String
+}
+
